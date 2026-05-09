@@ -52,10 +52,11 @@ export default function ChatWidget({ userId }: { userId: string }) {
 
       const data = await res.json();
       setMessages((prev) => [...prev, { id: data.chatMessageId, text: data.message, sender: 'ai' }]);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Chat Error:", error);
-      const errorMsg = error.name === 'AbortError' 
-        ? "The connection timed out. Please try again." 
+      const isAbortError = error instanceof Error && error.name === 'AbortError';
+      const errorMsg = isAbortError 
+        ? "The connection timeout. Please try again." 
         : "I'm sorry, I encountered an error connecting to my servers.";
       setMessages((prev) => [...prev, { id: Date.now().toString(), text: errorMsg, sender: 'ai' }]);
     } finally {
@@ -77,7 +78,7 @@ export default function ChatWidget({ userId }: { userId: string }) {
   };
 
   const toggleVoiceInput = () => {
-    // @ts-ignore
+    // @ts-expect-error - SpeechRecognition is not standard in all browsers
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Your browser does not support Speech Recognition.");
@@ -89,7 +90,7 @@ export default function ChatWidget({ userId }: { userId: string }) {
 
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => {
       const transcript = event.results[0][0].transcript;
       setInputValue(transcript);
       // Auto-send voice input

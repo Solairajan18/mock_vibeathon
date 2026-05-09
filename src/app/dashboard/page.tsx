@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import ChatWidget from '@/components/ChatWidget';
-import { FileText, ShieldAlert, Activity, CreditCard } from 'lucide-react';
+import { FileText, ShieldAlert, Activity } from 'lucide-react';
 
 export default async function Dashboard() {
   // Mock login: Fetch the first client

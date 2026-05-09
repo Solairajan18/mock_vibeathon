@@ -2,7 +2,6 @@ import { prisma } from '@/lib/prisma';
 import { ThumbsDown, ThumbsUp, CheckCircle, Clock } from 'lucide-react';
 
 export default async function AdminPortal() {
-  const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
 
   const feedbacks = await prisma.feedback.findMany({
     orderBy: { createdAt: 'desc' },
@@ -46,7 +45,7 @@ export default async function AdminPortal() {
                     </div>
                     
                     <div className="bg-blue-50 text-blue-900 p-3 rounded-lg mb-3 text-sm">
-                      <span className="font-semibold">AI Response:</span> "{feedback.chatMessage.message}"
+                      <span className="font-semibold">AI Response:</span> &quot;{feedback.chatMessage.message}&quot;
                     </div>
 
                     {feedback.correction && (
