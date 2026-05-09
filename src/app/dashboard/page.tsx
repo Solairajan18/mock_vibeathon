@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import ChatWidget from '@/components/ChatWidget';
 import { FileText, ShieldAlert, Activity } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Dashboard() {
   // Mock login: Fetch the first client
   const user = await prisma.user.findFirst({

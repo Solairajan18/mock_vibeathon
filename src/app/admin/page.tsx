@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { ThumbsDown, ThumbsUp, CheckCircle, Clock } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPortal() {
 
   const feedbacks = await prisma.feedback.findMany({
