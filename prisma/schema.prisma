@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  role      String   @default("CLIENT") // "CLIENT" or "ADMIN"
+  name      String
+  email     String   @unique
+  policies  Policy[]
+  claims    Claim[]
+  chats     ChatHistory[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Policy {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  type           String   // e.g. "Health", "Auto"
+  coverageAmount Float
+  renewalDate    DateTime
+  status         String   // e.g. "Active", "Expired"
+  claims         Claim[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Claim {
+  id          String   @id @default(uuid())
+  policyId    String
+  policy      Policy   @relation(fields: [policyId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  status      String   // e.g. "In Progress", "Approved", "Rejected"
+  dateFiled   DateTime @default(now())
+  description String
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  sender    String   // "user" or "ai"
+  timestamp DateTime @default(now())
+  feedbacks Feedback[]
+}
+
+model KnowledgeBase {
+  id       String @id @default(uuid())
+  question String
+  answer   String
+  category String // "Claims", "Policies", "Renewals", "Coverage"
+}
+
+model Feedback {
+  id             String      @id @default(uuid())
+  chatMessageId  String
+  chatMessage    ChatHistory @relation(fields: [chatMessageId], references: [id])
+  isHelpful      Boolean
+  correction     String?
+  status         String      @default("Pending") // "Pending", "Approved", "Rejected"
+  createdAt      DateTime    @default(now())
+}
